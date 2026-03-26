@@ -1,0 +1,1598 @@
+<!--
+  ============================================================
+  DECISÕES DE DESIGN — Mateus | Portfolio Landing Page
+  ============================================================
+
+  PRODUTO FICTÍCIO: Vértice Arquitetura
+  - Escritório de arquitetura residencial de alto padrão em Curitiba.
+  - Motivo: arquitetura permite layouts assimétricos, uso dramático de
+    whitespace, tipografia editorial, e imagens conceituais via formas
+    geométricas em SVG. Demonstra range completo: copy sofisticado,
+    hierarquia visual, motion design, e UI/UX de conversão.
+
+  PALETA DE CORES:
+  - #141211 (Carvão quente) — fundo principal. Sofisticação sem o clichê
+    do preto puro. O subtom marrom aquece e conecta com materialidade.
+  - #f4ede5 (Marfim) — texto principal e fundos claros. Mais quente que
+    branco puro, reduz fadiga visual e transmite organicidade.
+  - #c2613a (Terracota) — acento. Psicologia: energia + terra + criatividade.
+    Contrasta forte com carvão, guia o olho para CTAs sem ser agressivo.
+  - #a09486 (Pedra) — texto secundário e elementos sutis. Tom neutro
+    quente que complementa sem competir.
+  - #1e1c1a (Carvão médio) — variação para profundidade em cards/seções.
+
+  TIPOGRAFIA:
+  - Headings: Cormorant Garamond (Regular + SemiBold)
+    → Serif de alto contraste, evoca editorial de arquitetura (não é
+      Playfair Display, que já virou clichê). Eixo vertical elegante.
+  - Body: Figtree (Regular + Medium)
+    → Sans-serif geométrica com cantos suaves. Legibilidade alta em
+      telas, personalidade sem ser genérica. Não é Inter/Poppins/Outfit.
+
+  LÓGICA DE MOTION:
+  - Hero: linhas SVG que se "constroem" (stroke-dashoffset), simulando
+    uma planta baixa sendo desenhada. Wow moment nos primeiros 3s.
+  - Scroll reveals com Intersection Observer — fade + translate com
+    stagger em sequência.
+  - Text split reveal nos títulos principais.
+  - Parallax sutil na seção de projetos.
+  - Transições de seção com mudança de background via clip-path.
+  - Hover states com translate + shadow em cards.
+  - Cursor follower sutil no desktop.
+  ============================================================
+-->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mateus — Designer & Desenvolvedor Front-End | Landing Pages Profissionais em Curitiba</title>
+  <meta name="description" content="Criação de landing pages, sites institucionais e UI/UX com foco em conversão e performance. Design com estratégia para empresas que querem resultados reais.">
+  <meta property="og:title" content="Mateus — Landing Pages e Sites Profissionais">
+  <meta property="og:description" content="Design com estratégia: landing pages, sites institucionais e UI/UX feitos para converter.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Schema markup LocalBusiness -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Mateus — Design & Desenvolvimento Web",
+    "description": "Criação de landing pages profissionais, sites institucionais e UI/UX design com foco em conversão.",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Curitiba",
+      "addressRegion": "PR",
+      "addressCountry": "BR"
+    },
+    "url": "https://meusite.com.br",
+    "email": "contato@meusite.com.br",
+    "priceRange": "$$"
+  }
+  </script>
+
+  <style>
+    /* ── Reset & Base ─────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --coal: #141211;
+      --coal-mid: #1e1c1a;
+      --ivory: #f4ede5;
+      --terra: #c2613a;
+      --terra-light: #d4845f;
+      --stone: #a09486;
+      --stone-light: #c4b8ac;
+
+      --font-heading: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'Figtree', system-ui, sans-serif;
+
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+      --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+
+      --space-xs: 0.5rem;
+      --space-sm: 1rem;
+      --space-md: 2rem;
+      --space-lg: 4rem;
+      --space-xl: 8rem;
+      --space-2xl: 12rem;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--ivory);
+      background: var(--coal);
+      overflow-x: hidden;
+    }
+
+    img, svg { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+    /* ── Typography ────────────────────────────────── */
+    h1, h2, h3 {
+      font-family: var(--font-heading);
+      font-weight: 400;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    h1 { font-size: clamp(2.8rem, 7vw, 6.5rem); }
+    h2 { font-size: clamp(2rem, 4.5vw, 4rem); }
+    h3 { font-size: clamp(1.4rem, 2.5vw, 2rem); }
+
+    .label {
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--terra);
+    }
+
+    /* ── Layout Utilities ─────────────────────────── */
+    .container {
+      width: 100%;
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 0 var(--space-md);
+    }
+
+    section {
+      position: relative;
+    }
+
+    /* ── Reveal Animations ────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.9s var(--ease-out-expo), transform 0.9s var(--ease-out-expo);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-60px);
+      transition: opacity 0.9s var(--ease-out-expo), transform 0.9s var(--ease-out-expo);
+    }
+    .reveal-left.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(60px);
+      transition: opacity 0.9s var(--ease-out-expo), transform 0.9s var(--ease-out-expo);
+    }
+    .reveal-right.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Stagger children */
+    .stagger > * { transition-delay: calc(var(--i, 0) * 0.12s); }
+
+    /* Word reveal for headings */
+    .word-reveal .word {
+      display: inline-block;
+      overflow: hidden;
+      vertical-align: bottom;
+    }
+    .word-reveal .word-inner {
+      display: inline-block;
+      transform: translateY(105%);
+      transition: transform 0.7s var(--ease-out-expo);
+    }
+    .word-reveal.visible .word-inner {
+      transform: translateY(0);
+    }
+
+    /* ── Cursor Follower (desktop only) ───────────── */
+    .cursor-dot {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      background: var(--terra);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.15s var(--ease-out-quart);
+      mix-blend-mode: difference;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 36px;
+      height: 36px;
+      border: 1.5px solid var(--terra);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.4s var(--ease-out-expo), width 0.3s, height 0.3s;
+    }
+    body:hover .cursor-dot,
+    body:hover .cursor-ring { opacity: 1; }
+
+    @media (pointer: coarse) {
+      .cursor-dot, .cursor-ring { display: none; }
+    }
+
+    /* ── Navigation ────────────────────────────────── */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: var(--space-sm) var(--space-md);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.4s, backdrop-filter 0.4s;
+    }
+    .nav.scrolled {
+      background: rgba(20, 18, 17, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .nav-logo {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+    .nav-logo span { color: var(--terra); }
+    .nav-links {
+      display: flex;
+      gap: var(--space-md);
+      list-style: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+    }
+    .nav-links a {
+      position: relative;
+      padding: 0.25rem 0;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--terra);
+      transition: width 0.4s var(--ease-out-expo);
+    }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cta {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.6rem 1.5rem;
+      border: 1px solid var(--stone);
+      transition: border-color 0.3s, color 0.3s, background 0.3s;
+    }
+    .nav-cta:hover {
+      border-color: var(--terra);
+      color: var(--terra);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+    }
+
+    /* ── HERO ──────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-end;
+      padding: var(--space-xl) 0 var(--space-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated SVG blueprint lines — the wow moment */
+    .hero-svg {
+      position: absolute;
+      top: 0;
+      right: -5%;
+      width: 65%;
+      height: 100%;
+      opacity: 0.08;
+      z-index: 0;
+    }
+    .hero-svg line, .hero-svg rect, .hero-svg path, .hero-svg circle {
+      stroke: var(--ivory);
+      stroke-width: 1;
+      fill: none;
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+    }
+    .hero-svg.animate line,
+    .hero-svg.animate rect,
+    .hero-svg.animate path,
+    .hero-svg.animate circle {
+      animation: drawLine 3s var(--ease-out-expo) forwards;
+    }
+    .hero-svg.animate .delay-1 { animation-delay: 0.2s; }
+    .hero-svg.animate .delay-2 { animation-delay: 0.5s; }
+    .hero-svg.animate .delay-3 { animation-delay: 0.8s; }
+    .hero-svg.animate .delay-4 { animation-delay: 1.1s; }
+    .hero-svg.animate .delay-5 { animation-delay: 1.5s; }
+    .hero-svg.animate .delay-6 { animation-delay: 1.8s; }
+    .hero-svg.animate .delay-7 { animation-delay: 2.1s; }
+
+    @keyframes drawLine {
+      to { stroke-dashoffset: 0; }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+    }
+
+    .hero-label {
+      margin-bottom: var(--space-md);
+      overflow: hidden;
+    }
+    .hero-label .label {
+      display: inline-block;
+      transform: translateY(100%);
+      animation: slideUp 0.7s var(--ease-out-expo) 0.3s forwards;
+    }
+
+    @keyframes slideUp {
+      to { transform: translateY(0); }
+    }
+
+    .hero h1 {
+      margin-bottom: var(--space-md);
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--terra);
+    }
+
+    .hero-description {
+      font-size: clamp(1rem, 1.3vw, 1.2rem);
+      color: var(--stone-light);
+      max-width: 520px;
+      margin-bottom: var(--space-lg);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s var(--ease-out-expo) 1.4s forwards;
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-cta-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease-out-expo) 1.8s forwards;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 2rem;
+      background: var(--terra);
+      color: var(--ivory);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: background 0.3s, transform 0.3s var(--ease-out-expo), box-shadow 0.3s;
+    }
+    .btn-primary:hover {
+      background: var(--terra-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(194, 97, 58, 0.3);
+    }
+    .btn-primary .arrow {
+      display: inline-block;
+      transition: transform 0.3s var(--ease-out-expo);
+    }
+    .btn-primary:hover .arrow { transform: translateX(4px); }
+
+    .btn-ghost {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--stone-light);
+      position: relative;
+      padding: 0.5rem 0;
+      transition: color 0.3s;
+    }
+    .btn-ghost:hover { color: var(--ivory); }
+    .btn-ghost::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: var(--stone);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.4s var(--ease-out-expo);
+    }
+    .btn-ghost:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    /* Scroll indicator */
+    .scroll-hint {
+      position: absolute;
+      bottom: var(--space-md);
+      right: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--stone);
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease-out-expo) 2.5s forwards;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, var(--stone), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 1; transform: scaleY(1); }
+      50% { opacity: 0.4; transform: scaleY(0.6); }
+    }
+
+    /* ── ABOUT / PHILOSOPHY ───────────────────────── */
+    .about {
+      padding: var(--space-2xl) 0;
+      background: var(--coal);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+      align-items: start;
+    }
+
+    .about-left .label { margin-bottom: var(--space-sm); }
+
+    .about-stat-row {
+      display: flex;
+      gap: var(--space-lg);
+      margin-top: var(--space-lg);
+      padding-top: var(--space-lg);
+      border-top: 1px solid rgba(160, 148, 134, 0.2);
+    }
+
+    .stat-number {
+      font-family: var(--font-heading);
+      font-size: clamp(2.5rem, 4vw, 3.5rem);
+      color: var(--terra);
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--stone);
+      max-width: 140px;
+    }
+
+    .about-right {
+      padding-top: var(--space-lg);
+    }
+    .about-right p {
+      font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+      color: var(--stone-light);
+      margin-bottom: var(--space-md);
+      line-height: 1.8;
+    }
+    .about-right p:first-of-type {
+      font-size: clamp(1.2rem, 1.6vw, 1.4rem);
+      color: var(--ivory);
+    }
+
+    @media (max-width: 900px) {
+      .about-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
+      .about-right { padding-top: 0; }
+    }
+
+    /* ── PROJECTS ──────────────────────────────────── */
+    .projects {
+      padding: var(--space-xl) 0 var(--space-2xl);
+      background: var(--coal-mid);
+      /* Transition: diagonal clip from previous section */
+    }
+
+    .projects-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: var(--space-xl);
+    }
+    .projects-header h2 { max-width: 600px; }
+
+    .project-item {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: var(--space-lg);
+      align-items: center;
+      padding: var(--space-lg) 0;
+      border-top: 1px solid rgba(160, 148, 134, 0.12);
+    }
+    .project-item:nth-child(even) {
+      grid-template-columns: 1fr 1.1fr;
+    }
+    .project-item:nth-child(even) .project-visual { order: -1; }
+
+    .project-visual {
+      aspect-ratio: 4/3;
+      background: var(--coal);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Geometric placeholder for project images */
+    .project-visual-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.6s var(--ease-out-expo);
+    }
+    .project-item:hover .project-visual-inner {
+      transform: scale(1.03);
+    }
+    .project-visual svg {
+      width: 80%;
+      height: 80%;
+      opacity: 0.15;
+    }
+    .project-visual svg line, .project-visual svg rect, .project-visual svg polyline {
+      stroke: var(--ivory);
+      stroke-width: 0.5;
+      fill: none;
+    }
+
+    .project-number {
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      color: var(--stone);
+      margin-bottom: var(--space-sm);
+    }
+
+    .project-info h3 {
+      margin-bottom: var(--space-sm);
+      transition: color 0.3s;
+    }
+    .project-item:hover .project-info h3 { color: var(--terra); }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: var(--space-md);
+    }
+    .project-tag {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.9rem;
+      border: 1px solid rgba(160, 148, 134, 0.25);
+      color: var(--stone-light);
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .project-item:hover .project-tag {
+      border-color: var(--terra);
+      color: var(--terra);
+    }
+
+    .project-info p {
+      color: var(--stone-light);
+      font-size: 0.95rem;
+      max-width: 440px;
+      margin-top: var(--space-sm);
+    }
+
+    @media (max-width: 900px) {
+      .project-item,
+      .project-item:nth-child(even) {
+        grid-template-columns: 1fr;
+      }
+      .project-item:nth-child(even) .project-visual { order: 0; }
+      .projects-header { flex-direction: column; align-items: flex-start; gap: var(--space-sm); }
+    }
+
+    /* ── PROCESS ───────────────────────────────────── */
+    .process {
+      padding: var(--space-2xl) 0;
+      background: var(--coal);
+    }
+
+    .process-header {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto var(--space-xl);
+    }
+    .process-header .label { margin-bottom: var(--space-sm); }
+    .process-header p {
+      color: var(--stone-light);
+      margin-top: var(--space-sm);
+      font-size: 1.05rem;
+    }
+
+    .process-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-md);
+      position: relative;
+    }
+
+    /* Connecting line between steps */
+    .process-steps::before {
+      content: '';
+      position: absolute;
+      top: 36px;
+      left: 12.5%;
+      right: 12.5%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--stone), var(--stone), transparent);
+      opacity: 0.2;
+    }
+
+    .step {
+      text-align: center;
+      padding: var(--space-md) var(--space-sm);
+    }
+
+    .step-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto var(--space-md);
+      border: 1px solid rgba(160, 148, 134, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--coal);
+      position: relative;
+      z-index: 1;
+      transition: border-color 0.4s, transform 0.4s var(--ease-out-expo);
+    }
+    .step:hover .step-icon {
+      border-color: var(--terra);
+      transform: translateY(-4px);
+    }
+    .step-icon svg {
+      width: 28px;
+      height: 28px;
+      stroke: var(--terra);
+      stroke-width: 1.5;
+      fill: none;
+    }
+
+    .step h3 {
+      font-size: 1.15rem;
+      margin-bottom: 0.5rem;
+    }
+    .step p {
+      font-size: 0.85rem;
+      color: var(--stone);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .process-steps { grid-template-columns: 1fr 1fr; }
+      .process-steps::before { display: none; }
+    }
+    @media (max-width: 480px) {
+      .process-steps { grid-template-columns: 1fr; }
+    }
+
+    /* ── TESTIMONIALS ─────────────────────────────── */
+    .testimonials {
+      padding: var(--space-xl) 0 var(--space-2xl);
+      background: var(--coal-mid);
+    }
+
+    .testimonials-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .testimonial-card {
+      padding: var(--space-lg);
+      border: 1px solid rgba(160, 148, 134, 0.1);
+      transition: border-color 0.4s, transform 0.4s var(--ease-out-expo);
+      position: relative;
+    }
+    .testimonial-card:hover {
+      border-color: rgba(194, 97, 58, 0.3);
+      transform: translateY(-4px);
+    }
+    .testimonial-card:first-child {
+      grid-row: span 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .testimonial-quote {
+      font-family: var(--font-heading);
+      font-size: clamp(1.15rem, 1.5vw, 1.35rem);
+      font-style: italic;
+      line-height: 1.6;
+      color: var(--ivory);
+      margin-bottom: var(--space-md);
+    }
+    .testimonial-card:first-child .testimonial-quote {
+      font-size: clamp(1.3rem, 2vw, 1.7rem);
+    }
+
+    .testimonial-author {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--stone-light);
+    }
+    .testimonial-role {
+      font-size: 0.78rem;
+      color: var(--stone);
+      margin-top: 0.15rem;
+    }
+
+    .testimonial-mark {
+      font-family: var(--font-heading);
+      font-size: 4rem;
+      color: var(--terra);
+      opacity: 0.3;
+      line-height: 1;
+      margin-bottom: var(--space-sm);
+    }
+
+    @media (max-width: 768px) {
+      .testimonial-grid { grid-template-columns: 1fr; }
+      .testimonial-card:first-child { grid-row: auto; }
+    }
+
+    /* ── FICTIONAL CTA (architecture firm) ────────── */
+    .firm-cta {
+      padding: var(--space-2xl) 0;
+      background: var(--coal);
+      text-align: center;
+    }
+    .firm-cta h2 {
+      margin-bottom: var(--space-sm);
+    }
+    .firm-cta h2 em { font-style: italic; color: var(--terra); }
+    .firm-cta p {
+      color: var(--stone-light);
+      font-size: 1.1rem;
+      max-width: 500px;
+      margin: 0 auto var(--space-lg);
+    }
+
+    /* ── THE REVEAL — Freelancer Layer ────────────── */
+    .reveal-section {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .reveal-divider {
+      height: 2px;
+      background: linear-gradient(to right, transparent, var(--terra), transparent);
+      opacity: 0;
+      transition: opacity 1.2s;
+    }
+    .reveal-divider.visible { opacity: 1; }
+
+    .reveal-layer {
+      padding: var(--space-xl) 0 var(--space-2xl);
+      background: var(--ivory);
+      color: var(--coal);
+      position: relative;
+    }
+
+    /* Curtain effect — the section "opens" via clip-path */
+    .reveal-layer {
+      clip-path: inset(0 50% 0 50%);
+      transition: clip-path 1.2s var(--ease-in-out);
+    }
+    .reveal-layer.visible {
+      clip-path: inset(0 0% 0 0%);
+    }
+
+    .reveal-intro {
+      text-align: center;
+      max-width: 740px;
+      margin: 0 auto var(--space-xl);
+    }
+
+    .reveal-eyebrow {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ivory);
+      background: var(--terra);
+      padding: 0.4rem 1.2rem;
+      margin-bottom: var(--space-md);
+    }
+
+    .reveal-layer h2 {
+      color: var(--coal);
+      margin-bottom: var(--space-md);
+    }
+    .reveal-layer h2 em {
+      font-style: italic;
+      color: var(--terra);
+    }
+
+    .reveal-layer .reveal-desc {
+      font-size: 1.1rem;
+      color: var(--stone);
+      line-height: 1.8;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+    }
+
+    .service-card {
+      padding: var(--space-lg) var(--space-md);
+      border: 1px solid rgba(20, 18, 17, 0.1);
+      transition: border-color 0.3s, transform 0.3s var(--ease-out-expo), box-shadow 0.3s;
+    }
+    .service-card:hover {
+      border-color: var(--terra);
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(20, 18, 17, 0.08);
+    }
+
+    .service-card h3 {
+      color: var(--coal);
+      font-size: 1.3rem;
+      margin-bottom: var(--space-sm);
+    }
+    .service-card p {
+      color: var(--stone);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+    .service-icon {
+      width: 40px;
+      height: 40px;
+      margin-bottom: var(--space-md);
+    }
+    .service-icon svg {
+      stroke: var(--terra);
+      stroke-width: 1.5;
+      fill: none;
+    }
+
+    .reveal-bottom {
+      text-align: center;
+      padding-top: var(--space-lg);
+      border-top: 1px solid rgba(20, 18, 17, 0.08);
+    }
+
+    .reveal-bottom .name-big {
+      font-family: var(--font-heading);
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      color: var(--coal);
+      margin-bottom: 0.5rem;
+    }
+    .reveal-bottom .location {
+      font-size: 0.85rem;
+      color: var(--stone);
+      margin-bottom: var(--space-lg);
+    }
+
+    .contact-buttons {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+    }
+
+    .btn-whatsapp {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.9rem 2rem;
+      background: #25d366;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s;
+    }
+    .btn-whatsapp:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(37, 211, 102, 0.3);
+    }
+
+    .btn-email {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.9rem 2rem;
+      background: var(--coal);
+      color: var(--ivory);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s;
+    }
+    .btn-email:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(20, 18, 17, 0.2);
+    }
+
+    .final-note {
+      margin-top: var(--space-lg);
+      font-size: 0.82rem;
+      color: var(--stone);
+    }
+    .final-note a {
+      color: var(--terra);
+      border-bottom: 1px solid var(--terra);
+    }
+
+    @media (max-width: 768px) {
+      .services-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Footer ────────────────────────────────────── */
+    footer {
+      padding: var(--space-md);
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--stone);
+      background: var(--ivory);
+    }
+
+    /* ── prefers-reduced-motion ────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .hero-svg line, .hero-svg rect, .hero-svg path, .hero-svg circle {
+        stroke-dashoffset: 0 !important;
+      }
+      .reveal, .reveal-left, .reveal-right {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+      .word-reveal .word-inner {
+        transform: none !important;
+      }
+      .reveal-layer {
+        clip-path: none !important;
+      }
+      .cursor-dot, .cursor-ring { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cursor follower -->
+  <div class="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-ring" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" role="navigation" aria-label="Navegação principal">
+    <a href="#" class="nav-logo">Vértice<span>.</span></a>
+    <ul class="nav-links">
+      <li><a href="#about">Filosofia</a></li>
+      <li><a href="#projects">Projetos</a></li>
+      <li><a href="#process">Processo</a></li>
+      <li><a href="#testimonials">Depoimentos</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">Agendar conversa</a>
+  </nav>
+
+  <!-- ════════════════════════════════════════════════
+       CAMADA 1 — Vitrine: Vértice Arquitetura
+       ════════════════════════════════════════════════ -->
+
+  <!-- HERO -->
+  <header class="hero" id="hero">
+    <!-- Animated architectural blueprint SVG -->
+    <svg class="hero-svg" viewBox="0 0 800 900" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- Floor plan lines -->
+      <rect x="100" y="120" width="400" height="280" class="delay-1"/>
+      <line x1="100" y1="260" x2="500" y2="260" class="delay-2"/>
+      <line x1="300" y1="120" x2="300" y2="400" class="delay-2"/>
+      <rect x="120" y="140" width="160" height="100" class="delay-3"/>
+      <rect x="320" y="280" width="160" height="100" class="delay-4"/>
+      <!-- Dimensions -->
+      <line x1="100" y1="80" x2="500" y2="80" class="delay-5"/>
+      <line x1="100" y1="70" x2="100" y2="90" class="delay-5"/>
+      <line x1="500" y1="70" x2="500" y2="90" class="delay-5"/>
+      <!-- Elevation sketch -->
+      <path d="M150 550 L150 450 L350 350 L550 450 L550 550" class="delay-3"/>
+      <line x1="150" y1="550" x2="550" y2="550" class="delay-4"/>
+      <rect x="220" y="470" width="60" height="80" class="delay-6"/>
+      <rect x="420" y="470" width="60" height="80" class="delay-6"/>
+      <!-- Detail circles -->
+      <circle cx="350" cy="350" r="25" class="delay-7"/>
+      <!-- Cross lines -->
+      <line x1="550" y1="120" x2="700" y2="120" class="delay-5"/>
+      <line x1="550" y1="200" x2="700" y2="200" class="delay-6"/>
+      <line x1="550" y1="280" x2="700" y2="280" class="delay-7"/>
+      <!-- Compass -->
+      <circle cx="650" cy="500" r="40" class="delay-5"/>
+      <line x1="650" y1="460" x2="650" y2="475" class="delay-6"/>
+      <line x1="650" y1="525" x2="650" y2="540" class="delay-6"/>
+      <line x1="610" y1="500" x2="625" y2="500" class="delay-7"/>
+      <line x1="675" y1="500" x2="690" y2="500" class="delay-7"/>
+      <!-- Additional structural lines -->
+      <path d="M100 650 L250 650 L250 750 L400 750" class="delay-4"/>
+      <line x1="400" y1="700" x2="400" y2="800" class="delay-5"/>
+      <rect x="450" y="650" width="200" height="120" class="delay-6"/>
+      <line x1="450" y1="710" x2="650" y2="710" class="delay-7"/>
+    </svg>
+
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-label">
+          <span class="label">Arquitetura residencial · Curitiba, PR</span>
+        </div>
+        <h1 class="word-reveal">
+          <span class="word"><span class="word-inner">Espaços</span></span>
+          <span class="word"><span class="word-inner">que</span></span>
+          <span class="word"><span class="word-inner"><em>respeitam</em></span></span><br>
+          <span class="word"><span class="word-inner">quem</span></span>
+          <span class="word"><span class="word-inner">vai</span></span>
+          <span class="word"><span class="word-inner">habitá-los.</span></span>
+        </h1>
+        <p class="hero-description">
+          Projetamos casas onde cada metro quadrado tem intenção. Sem excessos,
+          sem concessões — só o que faz sentido para a sua rotina e para o terreno.
+        </p>
+        <div class="hero-cta-row">
+          <a href="#contact" class="btn-primary">
+            Fale com a gente <span class="arrow">→</span>
+          </a>
+          <a href="#projects" class="btn-ghost">Ver projetos</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-hint" aria-hidden="true">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </header>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-left">
+          <span class="label reveal">Filosofia</span>
+          <h2 class="word-reveal">
+            <span class="word"><span class="word-inner">Menos</span></span>
+            <span class="word"><span class="word-inner">decisões</span></span>
+            <span class="word"><span class="word-inner">estéticas.</span></span><br>
+            <span class="word"><span class="word-inner">Mais</span></span>
+            <span class="word"><span class="word-inner">decisões</span></span>
+            <span class="word"><span class="word-inner"><em>vividas.</em></span></span>
+          </h2>
+          <div class="about-stat-row reveal stagger">
+            <div style="--i:0">
+              <div class="stat-number" data-count="14">0</div>
+              <div class="stat-label">anos projetando em Curitiba e região</div>
+            </div>
+            <div style="--i:1">
+              <div class="stat-number" data-count="87">0</div>
+              <div class="stat-label">projetos residenciais entregues</div>
+            </div>
+            <div style="--i:2">
+              <div class="stat-number">100<span style="font-size:0.6em">%</span></div>
+              <div class="stat-label">dos projetos dentro do orçamento acordado</div>
+            </div>
+          </div>
+        </div>
+        <div class="about-right reveal stagger">
+          <p style="--i:0">
+            A gente acredita que uma casa bem feita não precisa provar nada.
+            Ela funciona. Você entra e simplesmente sente que faz sentido —
+            a luz no lugar certo, o corredor que não aperta, a cozinha
+            que acompanha o jeito como você cozinha de verdade.
+          </p>
+          <p style="--i:1">
+            Nosso processo começa escutando. Não o que você quer que a casa
+            pareça, mas como você quer que ela funcione. O estilo vem depois,
+            como consequência das decisões certas — nunca como ponto de partida.
+          </p>
+          <p style="--i:2">
+            Trabalhamos com um número limitado de projetos por vez. Isso não
+            é estratégia de marketing — é a única forma de garantir que cada
+            detalhe receba a atenção que merece.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="projects" id="projects">
+    <div class="container">
+      <div class="projects-header reveal">
+        <div>
+          <span class="label">Projetos selecionados</span>
+          <h2 class="word-reveal">
+            <span class="word"><span class="word-inner">Cada</span></span>
+            <span class="word"><span class="word-inner">terreno</span></span>
+            <span class="word"><span class="word-inner">conta</span></span>
+            <span class="word"><span class="word-inner">uma</span></span><br>
+            <span class="word"><span class="word-inner"><em>história</em></span></span>
+            <span class="word"><span class="word-inner">diferente.</span></span>
+          </h2>
+        </div>
+      </div>
+
+      <!-- Project 1 -->
+      <div class="project-item reveal-left">
+        <div class="project-info">
+          <div class="project-number">01</div>
+          <h3>Casa Araucária</h3>
+          <p>
+            420m² em terreno de esquina no Santa Felicidade. O desafio era
+            integrar três gerações sem perder a privacidade de ninguém.
+            Resolvemos com volumes independentes conectados por um pátio
+            central coberto.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">Residencial</span>
+            <span class="project-tag">420m²</span>
+            <span class="project-tag">2023</span>
+          </div>
+        </div>
+        <div class="project-visual" data-parallax="0.08">
+          <div class="project-visual-inner">
+            <svg viewBox="0 0 400 300" aria-hidden="true">
+              <rect x="50" y="80" width="180" height="140"/>
+              <rect x="170" y="50" width="180" height="170"/>
+              <line x1="50" y1="150" x2="350" y2="150"/>
+              <polyline points="50,80 140,30 230,80"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project 2 -->
+      <div class="project-item reveal-right">
+        <div class="project-info">
+          <div class="project-number">02</div>
+          <h3>Refúgio Graciosa</h3>
+          <p>
+            Casa de fim de semana na Serra da Graciosa. 180m² que somem
+            no meio das árvores. Estrutura em madeira laminada cruzada,
+            vidro do piso ao teto na face norte. A mata é o papel de parede.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">Refúgio</span>
+            <span class="project-tag">180m²</span>
+            <span class="project-tag">2024</span>
+          </div>
+        </div>
+        <div class="project-visual" data-parallax="0.08">
+          <div class="project-visual-inner">
+            <svg viewBox="0 0 400 300" aria-hidden="true">
+              <polyline points="40,200 200,80 360,200"/>
+              <rect x="120" y="200" width="160" height="80"/>
+              <line x1="40" y1="200" x2="360" y2="200"/>
+              <rect x="170" y="220" width="60" height="60"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project 3 -->
+      <div class="project-item reveal-left">
+        <div class="project-info">
+          <div class="project-number">03</div>
+          <h3>Edifício Imbuia</h3>
+          <p>
+            Prédio residencial de 6 andares no Batel. 12 unidades, nenhuma
+            igual à outra. Cada planta foi pensada individualmente a partir
+            das necessidades reais dos moradores — não de uma fôrma repetida.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">Multifamiliar</span>
+            <span class="project-tag">6 pavimentos</span>
+            <span class="project-tag">2024</span>
+          </div>
+        </div>
+        <div class="project-visual" data-parallax="0.08">
+          <div class="project-visual-inner">
+            <svg viewBox="0 0 400 300" aria-hidden="true">
+              <rect x="100" y="40" width="200" height="240"/>
+              <line x1="100" y1="80" x2="300" y2="80"/>
+              <line x1="100" y1="120" x2="300" y2="120"/>
+              <line x1="100" y1="160" x2="300" y2="160"/>
+              <line x1="100" y1="200" x2="300" y2="200"/>
+              <line x1="100" y1="240" x2="300" y2="240"/>
+              <line x1="200" y1="40" x2="200" y2="280"/>
+              <rect x="170" y="248" width="60" height="32"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="process" id="process">
+    <div class="container">
+      <div class="process-header">
+        <span class="label reveal">Nosso processo</span>
+        <h2 class="word-reveal">
+          <span class="word"><span class="word-inner">Do</span></span>
+          <span class="word"><span class="word-inner">terreno</span></span>
+          <span class="word"><span class="word-inner">vazio</span></span>
+          <span class="word"><span class="word-inner">à</span></span>
+          <span class="word"><span class="word-inner"><em>mudança.</em></span></span>
+        </h2>
+        <p class="reveal">Quatro etapas. Sem surpresas no caminho.</p>
+      </div>
+
+      <div class="process-steps reveal stagger">
+        <div class="step" style="--i:0">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7z"/><circle cx="12" cy="12" r="2"/></svg>
+          </div>
+          <h3>Escuta</h3>
+          <p>Entendemos como você vive, não como você imagina que quer morar. A diferença muda tudo.</p>
+        </div>
+        <div class="step" style="--i:1">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><line x1="14" y1="7" x2="21" y2="7"/><line x1="21" y1="7" x2="21" y2="14"/></svg>
+          </div>
+          <h3>Estudo</h3>
+          <p>Análise do terreno, orientação solar, ventilação e legislação. Antes do traço, vem a conta.</p>
+        </div>
+        <div class="step" style="--i:2">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          </div>
+          <h3>Projeto</h3>
+          <p>Cada decisão é apresentada e justificada. Você sabe por que cada parede está onde está.</p>
+        </div>
+        <div class="step" style="--i:3">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><rect x="9" y="12" width="6" height="8"/></svg>
+          </div>
+          <h3>Obra</h3>
+          <p>Acompanhamos a construção de perto. O que foi projetado no papel é o que sai no concreto.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials" id="testimonials">
+    <div class="container">
+      <div class="testimonials-header">
+        <span class="label reveal">Depoimentos</span>
+      </div>
+
+      <div class="testimonial-grid reveal stagger">
+        <div class="testimonial-card" style="--i:0">
+          <div class="testimonial-mark">"</div>
+          <p class="testimonial-quote">
+            Depois de morar dois anos na casa que a Vértice projetou,
+            ainda descubro detalhes que fazem meu dia mais fácil.
+            Uma tomada no lugar certo, a janela que pega o sol da tarde
+            exatamente onde eu leio. Isso não é sorte — é projeto.
+          </p>
+          <div class="testimonial-author">Renata K.</div>
+          <div class="testimonial-role">Casa Araucária · Santa Felicidade</div>
+        </div>
+
+        <div class="testimonial-card" style="--i:1">
+          <div class="testimonial-mark">"</div>
+          <p class="testimonial-quote">
+            Eles disseram não pra metade das minhas ideias — e eu
+            agradeço por cada não. A casa ficou melhor que qualquer
+            coisa que eu teria pedido.
+          </p>
+          <div class="testimonial-author">Carlos M.</div>
+          <div class="testimonial-role">Refúgio Graciosa · Serra</div>
+        </div>
+
+        <div class="testimonial-card" style="--i:2">
+          <div class="testimonial-mark">"</div>
+          <p class="testimonial-quote">
+            Orçamento fechado em março, chave entregue em novembro.
+            Sem drama, sem aditivo, sem surpresa. Primeira vez que
+            isso me acontece numa obra.
+          </p>
+          <div class="testimonial-author">Ana Luísa R.</div>
+          <div class="testimonial-role">Residência no Ecoville</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FIRM CTA (last fictional section) -->
+  <section class="firm-cta" id="contact">
+    <div class="container">
+      <span class="label reveal">Próximo passo</span>
+      <h2 class="word-reveal" style="margin-top: var(--space-sm);">
+        <span class="word"><span class="word-inner">Seu</span></span>
+        <span class="word"><span class="word-inner">projeto</span></span>
+        <span class="word"><span class="word-inner">começa</span></span>
+        <span class="word"><span class="word-inner">com</span></span>
+        <span class="word"><span class="word-inner">uma</span></span>
+        <span class="word"><span class="word-inner"><em>conversa.</em></span></span>
+      </h2>
+      <p class="reveal">Sem compromisso. Conta pra gente o que você precisa<br>e a gente diz com honestidade se podemos ajudar.</p>
+      <a href="#" class="btn-primary reveal" style="margin:0 auto; display: inline-flex;">
+        Agendar reunião inicial <span class="arrow">→</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════
+       CAMADA 2 — The Reveal: Mateus Freelancer
+       ════════════════════════════════════════════════ -->
+
+  <div class="reveal-section">
+    <div class="reveal-divider"></div>
+
+    <section class="reveal-layer" id="freelancer">
+      <div class="container">
+
+        <div class="reveal-intro">
+          <div class="reveal-eyebrow">Espera um segundo</div>
+          <h2>
+            Gostou dessa página?<br>
+            Eu <em>faço isso</em> para o seu negócio.
+          </h2>
+          <p class="reveal-desc">
+            Tudo que você viu acima — o layout, a copy, as animações, a estratégia
+            por trás de cada seção — é um exemplo real do que eu entrego.
+            A Vértice Arquitetura é fictícia. O trabalho é 100% real.
+          </p>
+        </div>
+
+        <div class="services-grid">
+          <div class="service-card">
+            <div class="service-icon">
+              <svg viewBox="0 0 40 40"><rect x="4" y="4" width="32" height="32" rx="3"/><line x1="4" y1="14" x2="36" y2="14"/><circle cx="12" cy="9" r="2"/><circle cx="20" cy="9" r="2"/></svg>
+            </div>
+            <h3>Landing Pages</h3>
+            <p>
+              Páginas feitas pra converter, não pra enfeitar portfólio.
+              Copy, SEO e design pensados juntos desde o wireframe.
+            </p>
+          </div>
+
+          <div class="service-card">
+            <div class="service-icon">
+              <svg viewBox="0 0 40 40"><rect x="6" y="2" width="28" height="36" rx="3"/><line x1="14" y1="10" x2="26" y2="10"/><line x1="14" y1="16" x2="30" y2="16"/><line x1="14" y1="22" x2="24" y2="22"/><rect x="10" y="28" width="8" height="4" rx="1"/></svg>
+            </div>
+            <h3>Sites Institucionais</h3>
+            <p>
+              Seu site é a primeira impressão do seu negócio. Eu garanto
+              que ela seja rápida, bonita e profissional.
+            </p>
+          </div>
+
+          <div class="service-card">
+            <div class="service-icon">
+              <svg viewBox="0 0 40 40"><circle cx="20" cy="16" r="10"/><path d="M8 36c0-6.63 5.37-12 12-12s12 5.37 12 12"/><line x1="20" y1="10" x2="20" y2="16"/><line x1="20" y1="16" x2="26" y2="16"/></svg>
+            </div>
+            <h3>UI/UX Design</h3>
+            <p>
+              Interfaces que funcionam. Testo, itero e refino até o
+              usuário conseguir fazer o que precisa sem pensar.
+            </p>
+          </div>
+        </div>
+
+        <div class="reveal-bottom">
+          <div class="name-big">Mateus</div>
+          <div class="location">Designer & Dev Front-End · Curitiba, PR</div>
+
+          <div class="contact-buttons">
+            <a href="https://wa.me/5541999999999" class="btn-whatsapp" target="_blank" rel="noopener">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a8 8 0 01-4.243-1.214l-.29-.18-3.1.92.87-3.17-.19-.3A8 8 0 1112 20z"/></svg>
+              WhatsApp
+            </a>
+            <a href="mailto:contato@meusite.com.br" class="btn-email">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg>
+              contato@meusite.com.br
+            </a>
+          </div>
+
+          <p class="final-note">
+            Respondo em até 24h. Sem formulário, sem chatbot — conversa direta.
+          </p>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <p>Feito por Mateus · Curitiba, PR · 2026</p>
+  </footer>
+
+  <script>
+    /* ══════════════════════════════════════════════════
+       JavaScript — Motion Design & Interactions
+       ══════════════════════════════════════════════════ */
+
+    // Respect reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ── Cursor Follower ────────────────────────────────
+    if (!prefersReducedMotion && window.matchMedia('(pointer: fine)').matches) {
+      const dot = document.querySelector('.cursor-dot');
+      const ring = document.querySelector('.cursor-ring');
+      let mouseX = 0, mouseY = 0;
+      let ringX = 0, ringY = 0;
+
+      document.addEventListener('mousemove', e => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        dot.style.transform = `translate(${mouseX - 4}px, ${mouseY - 4}px)`;
+      });
+
+      function animateRing() {
+        ringX += (mouseX - ringX) * 0.12;
+        ringY += (mouseY - ringY) * 0.12;
+        ring.style.transform = `translate(${ringX - 18}px, ${ringY - 18}px)`;
+        requestAnimationFrame(animateRing);
+      }
+      animateRing();
+    }
+
+    // ── Navigation Scroll State ────────────────────────
+    const nav = document.querySelector('.nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    }, { passive: true });
+
+    // ── Hero SVG Animation Trigger ─────────────────────
+    window.addEventListener('load', () => {
+      document.querySelector('.hero-svg').classList.add('animate');
+      // Trigger hero word reveal
+      document.querySelector('.hero .word-reveal').classList.add('visible');
+    });
+
+    // ── Intersection Observer: Reveals ─────────────────
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px 0px -60px 0px',
+      threshold: 0.15
+    };
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          // Don't unobserve — single trigger only, but CSS handles it
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    // Observe all revealable elements
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .word-reveal, .reveal-divider, .reveal-layer').forEach(el => {
+      // Skip hero word-reveal (handled by load event)
+      if (el.closest('.hero') && el.classList.contains('word-reveal')) return;
+      revealObserver.observe(el);
+    });
+
+    // ── Word Reveal: Stagger individual words ──────────
+    document.querySelectorAll('.word-reveal').forEach(heading => {
+      const words = heading.querySelectorAll('.word-inner');
+      words.forEach((word, i) => {
+        word.style.transitionDelay = `${i * 0.08 + 0.1}s`;
+      });
+    });
+
+    // ── Counter Animation ──────────────────────────────
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const target = parseInt(el.getAttribute('data-count'));
+          if (!target) return;
+          let current = 0;
+          const duration = 1800;
+          const step = target / (duration / 16);
+          const counter = setInterval(() => {
+            current += step;
+            if (current >= target) {
+              current = target;
+              clearInterval(counter);
+            }
+            el.textContent = Math.floor(current);
+          }, 16);
+          counterObserver.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('[data-count]').forEach(el => counterObserver.observe(el));
+
+    // ── Parallax (subtle, desktop only) ────────────────
+    if (!prefersReducedMotion && window.innerWidth > 768) {
+      const parallaxEls = document.querySelectorAll('[data-parallax]');
+      window.addEventListener('scroll', () => {
+        const scrollY = window.scrollY;
+        parallaxEls.forEach(el => {
+          const speed = parseFloat(el.getAttribute('data-parallax'));
+          const rect = el.getBoundingClientRect();
+          const offset = (rect.top + scrollY - window.innerHeight / 2) * speed;
+          el.style.transform = `translateY(${offset}px)`;
+        });
+      }, { passive: true });
+    }
+
+    // ── Smooth scroll for anchor links ─────────────────
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', e => {
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
