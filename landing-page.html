@@ -563,6 +563,7 @@
       background: var(--coal);
       position: relative;
       overflow: hidden;
+      transform: translateY(var(--parallax-y, 0));
     }
 
     /* Geometric placeholder for project images */
@@ -1504,7 +1505,7 @@
           const speed = parseFloat(el.getAttribute('data-parallax'));
           const rect = el.getBoundingClientRect();
           const offset = (rect.top + scrollY - window.innerHeight / 2) * speed;
-          el.style.transform = `translateY(${offset}px)`;
+          el.style.transform = `var(--parallax-y, ${offset}px)`;
         });
       }, { passive: true });
     }
